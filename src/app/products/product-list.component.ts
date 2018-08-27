@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
+import { IProduct } from './product';
 @Component({
     selector: 'pm-products',
-    templateUrl: './product-list.component.html'
+    templateUrl: './product-list.component.html',
+    styleUrls: ['./product-list.component.css']
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
 pageTitle = 'Product Listing ';
 imageWidth = 50;
 imageMargin = 2;
 showImage = false;
-products: any[] = [
+     _listFilter: string;
+     get listFilter() {
+        return this._listFilter;
+    }
+     set listFilter(value) {
+        this._listFilter = value;
+        this.filterdProducts = this.listFilter ? this.performFilter(this.listFilter) : this.products;
+    }
+filterdProducts: IProduct[];
+products: IProduct[] = [
     {
     'productId': 1,
     'productName': 'Leaf Rake',
@@ -30,8 +40,26 @@ products: any[] = [
     'starRating': 4.2,
     'imageUrl': 'https://openclipart.org/image/300px/svg_to_png/58471/garden_cart.png'
   }];
-
+constructor() {
+    this.filterdProducts = this.products;
+    this.listFilter = 'cart';
+}
   toggleImage(): void {
         this.showImage = !this.showImage;
   }
+  ngOnInit(): void {
+    console.log('This is OnInit');
+}
+performFilter(filterBy: string): IProduct[] {
+filterBy = filterBy.toLocaleLowerCase();
+return this.products.filter((product: IProduct) =>
+        product.productName.toLocaleLowerCase().indexOf(filterBy) !== -1);
+}
+
+// This is the method that handles the event that is been emit from the star component
+
+onRatingClicked(message: ByteString): void {
+
+   this.pageTitle = 'Product List: ' +  message;
+}
 }
